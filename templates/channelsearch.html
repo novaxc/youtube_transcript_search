@@ -27,10 +27,10 @@
   </section>
 
   <div class="container mt-5"></div>
-  <form method="post" action="/">
+  <form method="post" action="/channelsearch">
     <div style="display: grid">
-      <label for="video_url">Enter Channel URL:</label>
-      <input type="text" name="video_url" id="video_url" required>
+      <label for="channel_url">Enter Channel URL:</label>
+      <input type="text" name="channel_url" id="channel_url" required>
       
       <p style="margin-bottom: 15px;"></p>
 
@@ -42,5 +42,15 @@
     <button type="submit" name="action" value="search video">Search Channel</button>
   </form>
 </div>
+
+{% if df_html == [] %}   
+{% else %}
+    <div class="container mt-5">
+        <h1>Search Results</h1>
+        <div class="table-responsive">
+            {{ df_html | safe }}
+        </div>
+    </div>
+{% endif %}
 
 {% endblock %}

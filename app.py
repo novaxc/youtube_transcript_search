@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request
 from video_scraper import *  # Import your video scraping script
+from pytube import Channel
+import scrapetube
 
 app = Flask(__name__)
 
@@ -25,7 +27,28 @@ def videosearch():
 
 @app.route('/channelsearch', methods=['GET', 'POST'])
 def channelsearch():
-    return render_template('channelsearch.html')
+    if request.method == 'POST':
+        channel_url = request.form['channel_url']
+        search_keyword = request.form['search_word']
+        #c = Channel('https://www.youtube.com/channel/UCjXCAh2R1gwE1WlmNRUNpIg')
+        c = Channel(channel_url)
+
+        print("This is the channel name: " + str(c.channel_name))
+        print("This is the channel id: " + str(c.channel_id))   
+
+        videos = scrapetube.get_channel(c.channel_id)
+        search_results = pd.DataFrame()
+        count = 0
+
+        for video in videos:
+            count += 1
+            video_tag = video['videoId']
+            search_results.concat(search_video(video_tag, search_keyword))
+        print(count)
+
+        print("This is the dataframe returned to the front end: \n", search_results)
+        return render_template('channelsearch.html', df_html= search_results)
+    return render_template('channelsearch.html', df_html= [])
 
 @app.route('/results', methods=['GET', 'POST'])
 def results():
