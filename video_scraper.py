@@ -78,10 +78,12 @@ def search_video(video_tag, search_keyword):
             #print(next((item for item in transcript.fetch() if item['text'].find("guys") != -1), None))
 
             result = [video_slice for video_slice in transcript.fetch() if video_slice['text'].find(search_keyword) != -1]
+            count = 0
 
             if (len(result) == 0):
                 print("\nNo matches found for keyword: " + search_keyword)
                 df_html = ""
+                return df_html, count
 
             else:
                 print()
@@ -107,10 +109,10 @@ def search_video(video_tag, search_keyword):
                 
                 # Create a DataFrame
                 search_results = pd.DataFrame(data, columns=columns)
-                search_results.columns.name = 'Count'
+                search_results.columns.name = 'Instance'
                 search_results.index.name = None
                 search_results.index += 1   # Starts the count at 1 instead of the default of zero
-
+                count = len(search_results.index)
                 # Convert URLs to HTML anchor tags
                 #search_results['Timestamp URL'] = search_results['Timestamp URL'].apply(lambda x: f'<a href="{x}" target="_blank">Link</a>')
 
@@ -118,8 +120,8 @@ def search_video(video_tag, search_keyword):
 
                 # Convert DataFrame to HTML table
                 df_html = search_results.to_html(index= True, escape= False, render_links=True, classes='table table-bordered w3-table-all w3-card-4 table-striped', justify='center')
-
-                return df_html
+                print("this is the count returned back: ", count)
+                return df_html, count
 
     except TranscriptsDisabled:
         print("Subtitles are disabled for this video. Unable to search for keyword")
@@ -140,12 +142,11 @@ def search_channel(channel_url, search_keyword):
         videos = scrapetube.get_channel(c.channel_id)
         df_list = list()
         video_titles = list()
-        count = 0
+        count_list = list()
 
         for video in videos:
-            count += 1
             video_tag = video['videoId']
-            search_results = search_video(video_tag, search_keyword)
+            search_results, keyword_count = search_video(video_tag, search_keyword)
             link = 'https://youtu.be/'
             video_url= link + video_tag
             yt = YouTube(video_url)
@@ -153,13 +154,14 @@ def search_channel(channel_url, search_keyword):
             if search_results != "" and search_results != None:
                 df_list.append(search_results)
                 video_titles.append(yt.title)
+                count_list.append(keyword_count)
                 print("This is the video URL: ", video_url)
                 print("This is the title: ", yt.title)
-        print(count)
+                print("This is the keyword count: ", keyword_count)
 
         print("This is the dataframe returned to the front end: \n", df_list)
 
-        return df_list, video_titles
+        return df_list, video_titles, count_list
 
 
 

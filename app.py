@@ -4,10 +4,12 @@ from pytube import YouTube
 
 app = Flask(__name__)
 
-#TODO: Add in some error handling for inputs
+#TODO: Add in some error handling for inputs (try/catch blocks)
 #TODO: Have search results displayed as a separate page
 #TODO: Fix the table so that it works with the new flatly theme
 #TODO: Clean up the code and document the project
+#TODO: Figure out how to handle showing a table result where no keywords were found
+#TODO: Make the channel Regex better (especially for handling the new channel handles that youtube has)
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -22,15 +24,15 @@ def videosearch():
         video_tag = video_id(video_url)
         
         # Call the video search function from video_scraper.py
-        search_results = search_video(video_tag, search_keyword)
+        search_results, keyword_count = search_video(video_tag, search_keyword)
 
         #Get the title of the video
         yt = YouTube(video_url)
 
         print("This is the dataframe returned to the front end: \n", search_results)
-        return render_template('videosearch.html', df_html= search_results, title = yt.title)
+        return render_template('videosearch.html', df_html= search_results, title = yt.title, keyword_count=keyword_count)
     
-    return render_template('videosearch.html', df_html= [], title = "")
+    return render_template('videosearch.html', df_html= [], title = "", keyword_count=0)
 
 @app.route('/channelsearch', methods=['GET', 'POST'])
 def channelsearch():
@@ -39,10 +41,10 @@ def channelsearch():
         search_keyword = request.form['search_word']
 
         # Call the channel search function from video_scraper.py
-        df_list, video_titles = search_channel(channel_url, search_keyword)
+        df_list, video_titles, count_list = search_channel(channel_url, search_keyword)
         
-        return render_template('channelsearch.html', df_html= df_list, titles_list = video_titles, zip=zip)
-    return render_template('channelsearch.html', df_html= [], titles_list = [], zip=zip)
+        return render_template('channelsearch.html', df_html= df_list, titles_list = video_titles, count_list = count_list, zip=zip)
+    return render_template('channelsearch.html', df_html= [], titles_list = [], count_list = [], zip=zip)
 
 @app.route('/results', methods=['GET', 'POST'])
 def results():
