@@ -107,14 +107,17 @@ def search_video(video_tag, search_keyword):
                 
                 # Create a DataFrame
                 search_results = pd.DataFrame(data, columns=columns)
+                search_results.columns.name = 'Count'
+                search_results.index.name = None
+                search_results.index += 1   # Starts the count at 1 instead of the default of zero
 
                 # Convert URLs to HTML anchor tags
-                search_results['Timestamp URL'] = search_results['Timestamp URL'].apply(lambda x: f'<a href="{x}" target="_blank">Link</a>')
+                #search_results['Timestamp URL'] = search_results['Timestamp URL'].apply(lambda x: f'<a href="{x}" target="_blank">Link</a>')
 
                 print("This is the dataframe: \n", search_results)
 
                 # Convert DataFrame to HTML table
-                df_html = search_results.to_html(escape= False, classes='table table-bordered', index=False)
+                df_html = search_results.to_html(index= True, escape= False, render_links=True, classes='table table-bordered w3-table-all w3-card-4 table-striped', justify='center')
 
                 return df_html
 
