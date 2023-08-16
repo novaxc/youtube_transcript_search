@@ -48,12 +48,17 @@
   </form>
 </div>
 
-{% if df_html == [] %}   
+{% if df_html == [] or df_html == None %}   
 {% else %}
     <div class="container mt-5">
         <h1>Search Results</h1>
         <p style="margin-bottom: 30px;"></p>
-        <div class="table-responsive">
+        <h5>
+         <b>Video Title:</b> 
+          <small class="text-body-secondary">{{ title }}</small>
+        </h5>
+        <p style="margin-bottom: 5px;"></p>
+        <div class="table-responsive" style="text-align: center">
             {{ df_html | safe }}
         </div>
     </div>

@@ -1,10 +1,13 @@
 from flask import Flask, render_template, request
 from video_scraper import *  # Import my video scraping script
-from pytube import Channel
 from pytube import YouTube
-import scrapetube
 
 app = Flask(__name__)
+
+#TODO: Add in some error handling for inputs
+#TODO: Have search results displayed as a separate page
+#TODO: Fix the table so that it works with the new flatly theme
+#TODO: Clean up the code and document the project
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -21,43 +24,23 @@ def videosearch():
         # Call the video search function from video_scraper.py
         search_results = search_video(video_tag, search_keyword)
 
+        #Get the title of the video
+        yt = YouTube(video_url)
+
         print("This is the dataframe returned to the front end: \n", search_results)
-        return render_template('videosearch.html', df_html= search_results)
+        return render_template('videosearch.html', df_html= search_results, title = yt.title)
     
-    return render_template('videosearch.html', df_html= [])
+    return render_template('videosearch.html', df_html= [], title = "")
 
 @app.route('/channelsearch', methods=['GET', 'POST'])
 def channelsearch():
     if request.method == 'POST':
         channel_url = request.form['channel_url']
         search_keyword = request.form['search_word']
-        #c = Channel('https://www.youtube.com/channel/UCjXCAh2R1gwE1WlmNRUNpIg')
-        c = Channel(channel_url)
 
-        print("This is the channel name: " + str(c.channel_name))
-        print("This is the channel id: " + str(c.channel_id))   
-
-        videos = scrapetube.get_channel(c.channel_id)
-        df_list = list()
-        video_titles = list()
-        count = 0
-
-        for video in videos:
-            count += 1
-            video_tag = video['videoId']
-            search_results = search_video(video_tag, search_keyword)
-            link = 'https://youtu.be/'
-            video_url= link + video_tag
-            yt = YouTube(video_url)
-
-            if search_results != "" and search_results != None:
-                df_list.append(search_results)
-                video_titles.append(yt.title)
-                print("This is the video URL: ", video_url)
-                print("This is the title: ", yt.title)
-        print(count)
-
-        print("This is the dataframe returned to the front end: \n", df_list)
+        # Call the channel search function from video_scraper.py
+        df_list, video_titles = search_channel(channel_url, search_keyword)
+        
         return render_template('channelsearch.html', df_html= df_list, titles_list = video_titles, zip=zip)
     return render_template('channelsearch.html', df_html= [], titles_list = [], zip=zip)
 

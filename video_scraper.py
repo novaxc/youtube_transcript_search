@@ -1,6 +1,8 @@
 from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api import TranscriptsDisabled
 from pytube import YouTube
+from pytube import Channel
+import scrapetube
 import urllib.parse as urlparse
 import sys
 import pandas as pd
@@ -39,7 +41,7 @@ def video_id(value):
 
 
 
-# retrieve the available transcripts
+# Search a single video for a keyword
 def search_video(video_tag, search_keyword):
     print("This is the video id tag: " + video_tag)
     try:
@@ -122,6 +124,39 @@ def search_video(video_tag, search_keyword):
 
     # translating the transcript will return another transcript object
     #print(transcript.translate('en').fetch())
+
+
+# Search a single video for a keyword
+def search_channel(channel_url, search_keyword):
+    #c = Channel('https://www.youtube.com/channel/UCjXCAh2R1gwE1WlmNRUNpIg')
+        c = Channel(channel_url)
+
+        print("This is the channel name: " + str(c.channel_name))
+        print("This is the channel id: " + str(c.channel_id))   
+
+        videos = scrapetube.get_channel(c.channel_id)
+        df_list = list()
+        video_titles = list()
+        count = 0
+
+        for video in videos:
+            count += 1
+            video_tag = video['videoId']
+            search_results = search_video(video_tag, search_keyword)
+            link = 'https://youtu.be/'
+            video_url= link + video_tag
+            yt = YouTube(video_url)
+
+            if search_results != "" and search_results != None:
+                df_list.append(search_results)
+                video_titles.append(yt.title)
+                print("This is the video URL: ", video_url)
+                print("This is the title: ", yt.title)
+        print(count)
+
+        print("This is the dataframe returned to the front end: \n", df_list)
+
+        return df_list, video_titles
 
 
 
