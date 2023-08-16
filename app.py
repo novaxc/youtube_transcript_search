@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    return render_template('base.html')  # Default to video search tab
+    return render_template('videosearch.html', df_html= [])  # Default to video search tab
 
 @app.route('/videosearch', methods=['GET', 'POST'])
 def videosearch():

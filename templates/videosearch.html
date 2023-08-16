@@ -30,13 +30,13 @@
   <div class="container mt-5"></div>
   <form method="post" action="/videosearch">
     <div style="display: grid">
-      <label for="video_url">Enter Video URL:</label>
-      <input type="text" name="video_url" id="video_url" required>
+      <label for="video_url" class="col-sm-2 col-form-label">Enter Video URL:</label>
+      <input type="text" class="form-control" name="video_url" id="video_url" required>
 
       <p style="margin-bottom: 15px;"></p>
 
-      <label for="search_word">Enter Search Phrase:</label>
-      <input type="text" name="search_word" id="search_word" required>
+      <label for="search_word" class="col-sm-2 col-form-label">Enter Search Phrase:</label>
+      <input type="text" class="form-control" name="search_word" id="search_word" required>
     </div>
 
     <p style="margin-bottom: 30px;"></p>
@@ -52,6 +52,7 @@
 {% else %}
     <div class="container mt-5">
         <h1>Search Results</h1>
+        <p style="margin-bottom: 30px;"></p>
         <div class="table-responsive">
             {{ df_html | safe }}
         </div>
