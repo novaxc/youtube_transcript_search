@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
-from video_scraper import *  # Import your video scraping script
+from video_scraper import *  # Import my video scraping script
 from pytube import Channel
+from pytube import YouTube
 import scrapetube
 
 app = Flask(__name__)
@@ -37,18 +38,28 @@ def channelsearch():
         print("This is the channel id: " + str(c.channel_id))   
 
         videos = scrapetube.get_channel(c.channel_id)
-        search_results = pd.DataFrame()
+        df_list = list()
+        video_titles = list()
         count = 0
 
         for video in videos:
             count += 1
             video_tag = video['videoId']
-            search_results.concat(search_video(video_tag, search_keyword))
+            search_results = search_video(video_tag, search_keyword)
+            link = 'https://youtu.be/'
+            video_url= link + video_tag
+            yt = YouTube(video_url)
+
+            if search_results != "" and search_results != None:
+                df_list.append(search_results)
+                video_titles.append(yt.title)
+                print("This is the video URL: ", video_url)
+                print("This is the title: ", yt.title)
         print(count)
 
-        print("This is the dataframe returned to the front end: \n", search_results)
-        return render_template('channelsearch.html', df_html= search_results)
-    return render_template('channelsearch.html', df_html= [])
+        print("This is the dataframe returned to the front end: \n", df_list)
+        return render_template('channelsearch.html', df_html= df_list, titles_list = video_titles, zip=zip)
+    return render_template('channelsearch.html', df_html= [], titles_list = [], zip=zip)
 
 @app.route('/results', methods=['GET', 'POST'])
 def results():

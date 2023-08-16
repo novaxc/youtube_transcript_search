@@ -47,9 +47,15 @@
 {% else %}
     <div class="container mt-5">
         <h1>Search Results</h1>
-        <div class="table-responsive">
-            {{ df_html | safe }}
-        </div>
+        <p style="margin-bottom: 30px;"></p>
+        {% for table, title in zip(df_html, titles_list) %}
+            <caption><b>Video Title:</b> {{ title }}</caption>
+            <p style="margin-bottom: 5px;"></p>
+            <div class="table-responsive">
+               {{ table | safe }}
+            </div>
+            <p style="margin-bottom: 15px;"></p>
+        {% endfor %}
     </div>
 {% endif %}
 
