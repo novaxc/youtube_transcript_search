@@ -5,11 +5,9 @@ from pytube import YouTube
 app = Flask(__name__)
 
 #TODO: Add in some error handling for inputs (try/catch blocks)
-#TODO: Have search results displayed as a separate page
-#TODO: Fix the table so that it works with the new flatly theme
 #TODO: Clean up the code and document the project
-#TODO: Figure out how to handle showing a table result where no keywords were found
 #TODO: Make the channel Regex better (especially for handling the new channel handles that youtube has)
+#TODO: Look into form input pattern checking for channel urls and video urls (either at form input level or backend level)
 
 @app.route('/', methods=['GET', 'POST'])
 def home():

@@ -139,38 +139,38 @@ def search_video(video_tag, search_keyword):
 # Search a single video for a keyword
 def search_channel(channel_url, search_keyword):
     #c = Channel('https://www.youtube.com/channel/UCjXCAh2R1gwE1WlmNRUNpIg')
-        c = Channel(channel_url)
-        channel_name = c.channel_name
+    c = Channel(channel_url)
+    channel_name = c.channel_name
 
-        print("This is the channel name: " + str(c.channel_name))
-        print("This is the channel id: " + str(c.channel_id))   
+    print("This is the channel name: " + str(c.channel_name))
+    print("This is the channel id: " + str(c.channel_id))   
 
-        videos = scrapetube.get_channel(c.channel_id)
-        df_list = list()
-        video_titles = list()
-        count_list = list()
+    videos = scrapetube.get_channel(c.channel_id)
+    df_list = list()
+    video_titles = list()
+    count_list = list()
 
-        for video in videos:
-            video_tag = video['videoId']
-            search_results, keyword_count = search_video(video_tag, search_keyword)
-            link = 'https://youtu.be/'
-            video_url= link + video_tag
-            yt = YouTube(video_url)
+    for video in videos:
+        video_tag = video['videoId']
+        search_results, keyword_count = search_video(video_tag, search_keyword)
+        link = 'https://youtu.be/'
+        video_url= link + video_tag
+        yt = YouTube(video_url)
 
-            if search_results != "" and search_results != None:
-                df_list.append(search_results)
-                video_titles.append(yt.title)
-                count_list.append(keyword_count)
-                print("This is the video URL: ", video_url)
-                print("This is the title: ", yt.title)
-                print("This is the keyword count: ", keyword_count)
+        if search_results != "" and search_results != None:
+            df_list.append(search_results)
+            video_titles.append(yt.title)
+            count_list.append(keyword_count)
+            print("This is the video URL: ", video_url)
+            print("This is the title: ", yt.title)
+            print("This is the keyword count: ", keyword_count)
 
-        print("This is the dataframe returned to the front end: \n", df_list)
+    print("This is the dataframe returned to the front end: \n", df_list)
 
-        if len(count_list) == 0:
-            count_list.append(0)
+    if len(count_list) == 0:
+        count_list.append(0)
 
-        return df_list, video_titles, count_list, channel_name
+    return df_list, video_titles, count_list, channel_name
 
 
 
