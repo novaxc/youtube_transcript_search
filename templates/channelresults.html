@@ -10,6 +10,11 @@
     <p style="margin-bottom: 30px;"></p> 
 
     <h5>
+        <b>Channel:</b> 
+        <small class="text-body-secondary">{{ channel_name }}</small>
+    </h5>
+
+    <h5>
         <b>Keyword:</b> 
         <small class="text-body-secondary">{{ search_keyword }}</small>
     </h5>
@@ -29,6 +34,12 @@
 {% else %}
     <div class="container mt-5">
         <h1>Search Results</h1>
+
+        <h5>
+            <b>Channel:</b> 
+            <small class="text-body-secondary">{{ channel_name }}</small>
+        </h5>
+        
         <h5>
             <b>Keyword:</b> 
             <small class="text-body-secondary">{{ search_keyword }}</small>

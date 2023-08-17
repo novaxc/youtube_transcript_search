@@ -41,9 +41,9 @@ def channelsearch():
         search_keyword = request.form['search_word']
 
         # Call the channel search function from video_scraper.py
-        df_list, video_titles, count_list = search_channel(channel_url, search_keyword)
+        df_list, video_titles, count_list, channel_name = search_channel(channel_url, search_keyword)
         
-        return render_template('channelresults.html', df_html= df_list, titles_list = video_titles, count_list = count_list, search_keyword=search_keyword, zip=zip)
+        return render_template('channelresults.html', df_html= df_list, titles_list = video_titles, count_list = count_list, search_keyword=search_keyword, channel_name=channel_name, zip=zip)
     return render_template('channelsearch.html', df_html= [], titles_list = [], count_list = [], zip=zip)
 
 @app.route('/videoresults', methods=['GET', 'POST'])

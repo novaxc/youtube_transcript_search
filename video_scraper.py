@@ -140,6 +140,7 @@ def search_video(video_tag, search_keyword):
 def search_channel(channel_url, search_keyword):
     #c = Channel('https://www.youtube.com/channel/UCjXCAh2R1gwE1WlmNRUNpIg')
         c = Channel(channel_url)
+        channel_name = c.channel_name
 
         print("This is the channel name: " + str(c.channel_name))
         print("This is the channel id: " + str(c.channel_id))   
@@ -169,7 +170,7 @@ def search_channel(channel_url, search_keyword):
         if len(count_list) == 0:
             count_list.append(0)
 
-        return df_list, video_titles, count_list
+        return df_list, video_titles, count_list, channel_name
 
 
 
