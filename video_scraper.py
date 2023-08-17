@@ -44,6 +44,9 @@ def video_id(value):
 # Search a single video for a keyword
 def search_video(video_tag, search_keyword):
     print("This is the video id tag: " + video_tag)
+    count = 0
+    df_html = ""
+
     try:
         transcript_list = YouTubeTranscriptApi.list_transcripts(video_tag)
 
@@ -78,11 +81,11 @@ def search_video(video_tag, search_keyword):
             #print(next((item for item in transcript.fetch() if item['text'].find("guys") != -1), None))
 
             result = [video_slice for video_slice in transcript.fetch() if (video_slice['text'].lower()).find(search_keyword.lower()) != -1]
-            count = 0
+            
 
             if (len(result) == 0):
                 print("\nNo matches found for keyword: " + search_keyword)
-                df_html = ""
+                
                 return df_html, count
 
             else:
@@ -125,6 +128,8 @@ def search_video(video_tag, search_keyword):
 
     except TranscriptsDisabled:
         print("Subtitles are disabled for this video. Unable to search for keyword")
+
+        return df_html, count
     
 
     # translating the transcript will return another transcript object

@@ -30,7 +30,7 @@ def videosearch():
         yt = YouTube(video_url)
 
         print("This is the dataframe returned to the front end: \n", search_results)
-        return render_template('videosearch.html', df_html= search_results, title = yt.title, keyword_count=keyword_count)
+        return render_template('videoresults.html', df_html= search_results, title = yt.title, keyword_count=keyword_count)
     
     return render_template('videosearch.html', df_html= [], title = "", keyword_count=0)
 
@@ -46,9 +46,9 @@ def channelsearch():
         return render_template('channelsearch.html', df_html= df_list, titles_list = video_titles, count_list = count_list, zip=zip)
     return render_template('channelsearch.html', df_html= [], titles_list = [], count_list = [], zip=zip)
 
-@app.route('/results', methods=['GET', 'POST'])
+@app.route('/videoresults', methods=['GET', 'POST'])
 def results():
-    return render_template('results.html')  # Default to video search tab
+    return render_template('videoresults.html')  
 
 """def index():
     if request.method == 'POST':
