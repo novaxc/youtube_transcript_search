@@ -14,15 +14,21 @@
           <small class="text-body-secondary">{{ title }}</small>
         </h5>
         <h5>
+          <b>Keyword:</b> 
+          <small class="text-body-secondary">{{ search_keyword }}</small>
+        </h5>
+        <h5>
           <b>Count:</b> 
           <small class="text-body-secondary">{{ keyword_count }}</small>
         </h5>
-        <p style="margin-bottom: 5px;"></p>
+        <p style="margin-bottom: 30px;"></p>
+        
         <div class="table-responsive" style="text-align: center">
             {{ df_html | safe }}
         </div>
-
-        <!-- Back button to return to the search form -->
+    
+    <p style="margin-bottom: 25px;"></p>
+    <!-- Back button to return to the search form -->
     <a href="{{ url_for('home') }}">Back to Search</a>
     <p style="margin-bottom: 25px;"></p>
     </div>

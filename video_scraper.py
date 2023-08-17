@@ -166,6 +166,9 @@ def search_channel(channel_url, search_keyword):
 
         print("This is the dataframe returned to the front end: \n", df_list)
 
+        if len(count_list) == 0:
+            count_list.append(0)
+
         return df_list, video_titles, count_list
 
 
