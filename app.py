@@ -5,7 +5,6 @@ from pytube import YouTube
 app = Flask(__name__)
 
 #TODO: Add in some error handling for inputs (try/catch blocks)
-#TODO: Clean up the code and document the project
 #TODO: Make the channel Regex better (especially for handling the new channel handles that youtube has)
 #TODO: Look into form input pattern checking for channel urls and video urls (either at form input level or backend level)
 
@@ -33,9 +32,7 @@ def videosearch():
         #Get the title of the video
         yt = YouTube(video_url)
 
-        print("This is the dataframe returned to the front end: \n", search_results)
         return render_template('videoresults.html', df_html= search_results, title = yt.title, keyword_count=keyword_count, search_keyword=search_keyword)
-    
     return render_template('videosearch.html', df_html= [], title = "", keyword_count=0)
 
 
@@ -68,36 +65,6 @@ def channelresults():
 
     return render_template('channelresults.html')  
 
-"""def index():
-    if request.method == 'POST':
-        action = request.form['action']
-        video_url = request.form['video_url']
-        search_keyword = request.form['search_word']
-
-        video_tag = video_id(video_url)
-        
-
-        if action == 'search channel':
-            # Call the channel search function from video_scraper.py
-            print("Placeholder code")
-
-        if action == 'search video':
-            # Call the video search function from video_scraper.py
-            search_results = search_video(video_tag, search_keyword)
-
-            print("This is the dataframe returned to the front end: \n", search_results)
-            return render_template('index.html', df_html= search_results)
-        
-    return render_template('index.html', df_html=None)
-"""
-
-"""@app.route('/videosearch')
-def about():
-    return render_template('videosearch.html')
-
-@app.route('/channelsearch')
-def contact():
-    return render_template('channelsearch.html')"""
 
 if __name__ == '__main__':
     app.run(debug=True)
