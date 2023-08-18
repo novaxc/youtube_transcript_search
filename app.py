@@ -9,12 +9,18 @@ app = Flask(__name__)
 #TODO: Make the channel Regex better (especially for handling the new channel handles that youtube has)
 #TODO: Look into form input pattern checking for channel urls and video urls (either at form input level or backend level)
 
+
 @app.route('/', methods=['GET', 'POST'])
 def home():
+    # Displays the home page and defaults to the video search page
+
     return render_template('videosearch.html', df_html= [])  # Default to video search tab
+
 
 @app.route('/videosearch', methods=['GET', 'POST'])
 def videosearch():
+    # Displays a form to gather user input for the video search functionality
+
     if request.method == 'POST':
         video_url = request.form['video_url']
         search_keyword = request.form['search_word']
@@ -32,8 +38,11 @@ def videosearch():
     
     return render_template('videosearch.html', df_html= [], title = "", keyword_count=0)
 
+
 @app.route('/channelsearch', methods=['GET', 'POST'])
 def channelsearch():
+    # Displays a form to gather user input for the channel search functionality
+
     if request.method == 'POST':
         channel_url = request.form['channel_url']
         search_keyword = request.form['search_word']
@@ -44,12 +53,19 @@ def channelsearch():
         return render_template('channelresults.html', df_html= df_list, titles_list = video_titles, count_list = count_list, search_keyword=search_keyword, channel_name=channel_name, zip=zip)
     return render_template('channelsearch.html', df_html= [], titles_list = [], count_list = [], zip=zip)
 
+
 @app.route('/videoresults', methods=['GET', 'POST'])
 def videoresults():
+    # Displays the HTML table results representing all the instances where the keyword was found in the video
+
     return render_template('videoresults.html')  
+
 
 @app.route('/channelresults', methods=['GET', 'POST'])
 def channelresults():
+    # Displays the HTML table results representing all the instances where the keyword was found for each video
+    # in the channel
+
     return render_template('channelresults.html')  
 
 """def index():
