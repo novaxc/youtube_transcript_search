@@ -10,6 +10,7 @@ import re
 import requests
 
 # TODO: refactor code and put the timestamp generator into its own function (for example)
+# TODO: Need to improve channel search speed. It is currently O(n^3) which is very slow for channels with thousands of videos
 
 
 def video_id(value):
