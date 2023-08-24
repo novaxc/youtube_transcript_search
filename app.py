@@ -5,7 +5,6 @@ from pytube import YouTube
 app = Flask(__name__)
 
 # TODO: Add in some error handling for inputs (try/catch blocks)
-# TODO: Look into form input pattern checking for channel urls and video urls (either at form input level or backend level)
 # TODO: Deploy serverless Flask app using AWS lambda
 
 

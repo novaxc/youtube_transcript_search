@@ -31,7 +31,10 @@
   <form method="post" action="/videosearch">
     <div style="display: grid">
       <label for="video_url" class="col-sm-2 col-form-label">Enter Video URL:</label>
-      <input type="text" class="form-control" name="video_url" id="video_url" required>
+      <input type="url" class="form-control" name="video_url" id="video_url" 
+       pattern="https?://www.youtube.com/watch.+|https?://www.youtube.com/embed/.+|https?://www.youtube.com/v/.+|https?://youtu.be/.+" 
+       title="Expected formats: https://www.youtube.com/watch?v= | https://www.youtube.com/embed/ | 
+       https://www.youtube.com/v/ | https://youtu.be/" required>
 
       <p style="margin-bottom: 15px;"></p>
 

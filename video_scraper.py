@@ -9,9 +9,6 @@ import pandas as pd
 import re
 import requests
 
-# TODO: refactor code and put the timestamp generator into its own function (for example)
-# TODO: Need to improve channel search speed. It is currently O(n^3) which is very slow for channels with thousands of videos
-
 
 def video_id(value):
     """Parses the URL to pull out the video ID for the YouTube video
@@ -107,6 +104,20 @@ def search_video(video_tag, search_keyword):
 
 # TODO: Add in error handling here
 def get_channel_id(channel_url):
+    """Scrapes the page source requested using the channel URL to glean the channel ID
+
+    Args:
+        channel_url (str): The url for a given Youtube Channel
+
+        Examples:
+        - https://www.youtube.com/c/{channel_name}/
+        - https://www.youtube.com/channel/{channel_id}/
+        - https://www.youtube.com/@{channel_name}/
+
+    Returns:
+        The channel ID scraped from the page source of the channel URL
+    """
+
     response = requests.get(channel_url)
     page_source = response.text
 
@@ -130,7 +141,9 @@ def search_channel(channel_url, search_keyword):
         channel_url (str): The url for a given Youtube Channel
         
         Examples:
-        - https://www.youtube.com/channel/UC68TLK0mAEzUyHx5x5k-S1Q
+        - https://www.youtube.com/c/{channel_name}/
+        - https://www.youtube.com/channel/{channel_id}/
+        - https://www.youtube.com/@{channel_name}/
 
         search_keyword (str): User input representing the keyword to be searched for
 
@@ -140,6 +153,7 @@ def search_channel(channel_url, search_keyword):
         count_list (List[int]): A list containing counter values which represent the number of times the keyword was found 
         in each video from the channel
     """
+
     channel_id = get_channel_id(channel_url)
     formatted_channel_url = 'https://youtube.com/channel/' + channel_id
     c = Channel(formatted_channel_url)
@@ -156,7 +170,8 @@ def search_channel(channel_url, search_keyword):
         video_tag = video['videoId']
         search_results, keyword_count = search_video(video_tag, search_keyword)
         link = 'https://youtu.be/'
-        video_url= link + video_tag
+        # video_url= link + video_tag
+        video_url = f'{link}{video_tag}'
         yt = YouTube(video_url)
 
         if search_results != "" and search_results != None:

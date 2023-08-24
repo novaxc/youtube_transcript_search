@@ -30,7 +30,10 @@
   <form method="post" action="/channelsearch">
     <div style="display: grid">
       <label for="channel_url" class="col-sm-2 col-form-label">Enter Channel URL:</label>
-      <input type="text" class="form-control" name="channel_url" id="channel_url" required>
+      <input type="url" class="form-control" name="channel_url" id="channel_url" 
+       pattern="https?://www.youtube.com/c/.+|https?://www.youtube.com/channel/.+|https?://www.youtube.com/@.+" 
+       title="Expected formats: https://www.youtube.com/c/{channel_name}/ | https://www.youtube.com/channel/{channel_id}/ | 
+       https://www.youtube.com/@{channel_name}/" required>
       
       <p style="margin-bottom: 15px;"></p>
 
