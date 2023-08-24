@@ -4,7 +4,7 @@ from pytube import YouTube
 from pytube import Channel
 import scrapetube
 import urllib.parse as urlparse
-import sys
+import concurrent.futures
 import pandas as pd
 import re
 import requests
@@ -148,11 +148,11 @@ def search_channel(channel_url, search_keyword):
     # print("This is the channel name: " + channel_name)
 
     videos = scrapetube.get_channel(c.channel_id)
-    df_list = list()
-    video_titles = list()
-    count_list = list()
+    df_list = []
+    video_titles = []
+    count_list = []
 
-    for video in videos:
+    def process_video(video):
         video_tag = video['videoId']
         search_results, keyword_count = search_video(video_tag, search_keyword)
         link = 'https://youtu.be/'
@@ -163,8 +163,11 @@ def search_channel(channel_url, search_keyword):
             df_list.append(search_results)
             video_titles.append(yt.title)
             count_list.append(keyword_count)
+    
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        executor.map(process_video, videos)
 
-    if len(count_list) == 0:
+    if not count_list:
         count_list.append(0)
 
     return df_list, video_titles, count_list, channel_name
