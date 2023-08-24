@@ -61,46 +61,43 @@ def search_video(video_tag, search_keyword):
 
     count = 0
     df_html = ""
+    link = 'https://youtu.be/'
+
+    # Define column names
+    columns = ["Occurence Time (seconds)", "Timestamp URL", "Transcript Text"]
+
+    # Create a list that will store the intermediate data frame rows
+    data = []
 
     try:
         transcript_list = YouTubeTranscriptApi.list_transcripts(video_tag)
 
         # iterate over all available transcripts
         for transcript in transcript_list:
-
-            result = [video_slice for video_slice in transcript.fetch() if (video_slice['text'].lower()).find(search_keyword.lower()) != -1]
+            result = [video_slice for video_slice in transcript.fetch() if search_keyword.lower() in video_slice['text'].lower()]
             
             if (len(result) == 0):
                 # print("\nNo matches found for keyword: " + search_keyword)
                 
                 return df_html, count
 
-            else:
-                link = 'https://youtu.be/'
+            #Generate the timestamp links where the keyword was found in the video
+            for item in result:
+                timestamp_url = f'{link}{video_tag}?t={item["start"] - 1}s'
 
-                # Define column names
-                columns = ["Occurence Time (seconds)", "Timestamp URL", "Transcript Text"]
+                data.append([str(item['start']), timestamp_url, item['text']])
+            
+        # Create a DataFrame
+        search_results = pd.DataFrame(data, columns=columns)
+        search_results.columns.name = 'Instance'
+        search_results.index.name = None
+        search_results.index += 1   # Starts the count at 1 instead of the default of zero
+        count = len(search_results.index)
 
-                # Create a list that will store the intermediate data frame rows
-                data = []
-                
-                #Generate the timestamp links where the keyword was found in the video
-                for item in result:
-                    timestamp_url = link + video_tag + '?t=' + str(item['start']-1) + 's'
+        # Convert DataFrame to HTML table
+        df_html = search_results.to_html(index= True, escape= False, render_links=True, classes='table table-bordered w3-table-all w3-card-4 table-striped', justify='center')
 
-                    data.append([str(item['start']), timestamp_url, item['text']])
-                
-                # Create a DataFrame
-                search_results = pd.DataFrame(data, columns=columns)
-                search_results.columns.name = 'Instance'
-                search_results.index.name = None
-                search_results.index += 1   # Starts the count at 1 instead of the default of zero
-                count = len(search_results.index)
-
-                # Convert DataFrame to HTML table
-                df_html = search_results.to_html(index= True, escape= False, render_links=True, classes='table table-bordered w3-table-all w3-card-4 table-striped', justify='center')
-
-                return df_html, count
+        return df_html, count
 
     except TranscriptsDisabled:
         print("Subtitles are disabled for this video. Unable to search for keyword")
