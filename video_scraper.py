@@ -27,20 +27,24 @@ def video_id(value):
         The video ID parsed from the URL of a Youtube video
     """
 
-    query = urlparse.urlparse(value)
-    if query.hostname == 'youtu.be':
-        return query.path[1:]
-    if query.hostname in ('www.youtube.com', 'youtube.com'):
-        if query.path == '/watch':
-            p = urlparse.parse_qs(query.query)
-            return p['v'][0]
-        if query.path[:7] == '/embed/':
-            return query.path.split('/')[2]
-        if query.path[:3] == '/v/':
-            return query.path.split('/')[2]
+    try: 
+        query = urlparse.urlparse(value)
+        if query.hostname == 'youtu.be':
+            return query.path[1:]
+        if query.hostname in ('www.youtube.com', 'youtube.com'):
+            if query.path == '/watch':
+                p = urlparse.parse_qs(query.query)
+                return p['v'][0]
+            if query.path[:7] == '/embed/':
+                return query.path.split('/')[2]
+            if query.path[:3] == '/v/':
+                return query.path.split('/')[2]
+        # fail?
+        return None
     
-    # fail?
-    return None
+    except Exception as e:
+        print("An error occurred: ", e)
+        return None
 
 
 def search_video(video_tag, search_keyword):
@@ -98,11 +102,13 @@ def search_video(video_tag, search_keyword):
 
     except TranscriptsDisabled:
         print("Subtitles are disabled for this video. Unable to search for keyword")
-
+        return df_html, count
+    
+    except Exception as e:
+        print("An error occurred: ", e)
         return df_html, count
 
 
-# TODO: Add in error handling here
 def get_channel_id(channel_url):
     """Scrapes the page source requested using the channel URL to glean the channel ID
 
@@ -118,18 +124,28 @@ def get_channel_id(channel_url):
         The channel ID scraped from the page source of the channel URL
     """
 
-    response = requests.get(channel_url)
-    page_source = response.text
+    try:
+        response = requests.get(channel_url)
+        response.raise_for_status()  # Raise an exception for 4xx and 5xx responses
+        page_source = response.text
 
-    channel_id_match = re.search(r'canonical" href="https://www.youtube.com/channel/([^"]+)', page_source)
-    if channel_id_match:
-        channel_id = channel_id_match.group(1)
-        print("Channel ID:", channel_id)
-    else:
-        print("Channel ID not found.")
-        channel_id = None
+        channel_id_match = re.search(r'canonical" href="https://www.youtube.com/channel/([^"]+)', page_source)
+        if channel_id_match:
+            channel_id = channel_id_match.group(1)
+            print("Channel ID:", channel_id)
+            return channel_id
+        
+        else:
+            print("Channel ID not found.")
+            return None
 
-    return channel_id
+    except requests.exceptions.RequestException as e:
+        print("An error occurred during the request:", e)
+        return None
+    
+    except Exception as e:
+        print("An error occurred: ", e)
+        return None
 
 
 # Search an entire channel for a keyword
@@ -154,35 +170,44 @@ def search_channel(channel_url, search_keyword):
         in each video from the channel
     """
 
-    channel_id = get_channel_id(channel_url)
-    formatted_channel_url = 'https://youtube.com/channel/' + channel_id
-    c = Channel(formatted_channel_url)
-    channel_name = c.channel_name 
-    # print("This is the channel ID: " + channel_id)
-    # print("This is the channel name: " + channel_name)
+    try: 
+        channel_id = get_channel_id(channel_url)
+        formatted_channel_url = 'https://youtube.com/channel/' + channel_id
+        c = Channel(formatted_channel_url)
+        channel_name = c.channel_name 
+        # print("This is the channel ID: " + channel_id)
+        # print("This is the channel name: " + channel_name)
 
-    videos = scrapetube.get_channel(c.channel_id)
-    df_list = []
-    video_titles = []
-    count_list = []
+        videos = scrapetube.get_channel(c.channel_id)
+        df_list = []
+        video_titles = []
+        count_list = []
 
-    def process_video(video):
-        video_tag = video['videoId']
-        search_results, keyword_count = search_video(video_tag, search_keyword)
-        link = 'https://youtu.be/'
-        # video_url= link + video_tag
-        video_url = f'{link}{video_tag}'
-        yt = YouTube(video_url)
+        def process_video(video):
+            try: 
+                video_tag = video['videoId']
+                search_results, keyword_count = search_video(video_tag, search_keyword)
+                link = 'https://youtu.be/'
+                # video_url= link + video_tag
+                video_url = f'{link}{video_tag}'
+                yt = YouTube(video_url)
 
-        if search_results != "" and search_results != None:
-            df_list.append(search_results)
-            video_titles.append(yt.title)
-            count_list.append(keyword_count)
+                if search_results != "" and search_results != None:
+                    df_list.append(search_results)
+                    video_titles.append(yt.title)
+                    count_list.append(keyword_count)
+            
+            except Exception as e:
+                print(f"Error processing video {video_tag}: {e}")
+        
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            executor.map(process_video, videos)
+
+        if not count_list:
+            count_list.append(0)
+
+        return df_list, video_titles, count_list, channel_name
     
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        executor.map(process_video, videos)
-
-    if not count_list:
-        count_list.append(0)
-
-    return df_list, video_titles, count_list, channel_name
+    except Exception as e:
+        print("An error occurred: ", e)
+        return [], [], [], None
