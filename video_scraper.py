@@ -1,5 +1,6 @@
 from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api import TranscriptsDisabled
+from youtube_transcript_api import CouldNotRetrieveTranscript
 from pytube import YouTube
 from pytube import Channel
 import scrapetube
@@ -73,20 +74,22 @@ def search_video(video_tag, search_keyword):
     try:
         transcript_list = YouTubeTranscriptApi.list_transcripts(video_tag)
 
-        # iterate over all available transcripts
-        for transcript in transcript_list:
-            result = [video_slice for video_slice in transcript.fetch() if search_keyword.lower() in video_slice['text'].lower()]
+        # Ensures that only the English transcript is searched
+        transcript = transcript_list.find_transcript(['en']) 
+
+        #print("This is the transcript returned: " + str(transcript))
+        result = [video_slice for video_slice in transcript.fetch() if search_keyword.lower() in video_slice['text'].lower()]
+        
+        if (len(result) == 0):
+            # print("\nNo matches found for keyword: " + search_keyword)
             
-            if (len(result) == 0):
-                # print("\nNo matches found for keyword: " + search_keyword)
-                
-                return df_html, count
+            return df_html, count
 
-            #Generate the timestamp links where the keyword was found in the video
-            for item in result:
-                timestamp_url = f'{link}{video_tag}?t={item["start"] - 1}s'
+        #Generate the timestamp links where the keyword was found in the video
+        for item in result:
+            timestamp_url = f'{link}{video_tag}?t={item["start"] - 1}s'
 
-                data.append([str(item['start']), timestamp_url, item['text']])
+            data.append([str(item['start']), timestamp_url, item['text']])
             
         # Create a DataFrame
         search_results = pd.DataFrame(data, columns=columns)
@@ -102,6 +105,10 @@ def search_video(video_tag, search_keyword):
 
     except TranscriptsDisabled:
         print("Subtitles are disabled for this video. Unable to search for keyword")
+        return df_html, count
+    
+    except CouldNotRetrieveTranscript:
+        print("Transcript is not available in English. Unable to search for keyword")
         return df_html, count
     
     except Exception as e:
