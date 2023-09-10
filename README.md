@@ -37,14 +37,14 @@ The program relies on the following libraries to implement the keyword search fu
   pip install scrapetube
   ```
 
-* requests
-  ```sh
-  pip install requests
-  ```
-
 * pandas
   ```sh
   pip install pandas
+  ```
+  
+* requests
+  ```sh
+  pip install requests
   ```
 
 ### Installation
