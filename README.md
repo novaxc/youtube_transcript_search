@@ -42,8 +42,7 @@ The program relies on the following libraries to implement the keyword search fu
   pip install requests
   ```
 
-
-  * Pandas
+* pandas
   ```sh
   pip install pandas
   ```
