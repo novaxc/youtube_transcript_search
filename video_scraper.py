@@ -75,9 +75,32 @@ def search_video(video_tag, search_keyword):
         transcript_list = YouTubeTranscriptApi.list_transcripts(video_tag)
 
         # Ensures that only the English transcript is searched
-        transcript = transcript_list.find_transcript(['en']) 
+        transcript = transcript_list.find_transcript(['en'])
 
-        #print("This is the transcript returned: " + str(transcript))
+        # Strip out only the transcript text
+        """transcript_text  = [[""]]
+        temp_transcript = ""
+        segment = 0
+        for slice in transcript.fetch():
+            if slice['start'] >= 1200 * (segment + 1):
+                print("in here")
+                transcript_text.append(temp_transcript)
+                print("after jhere")
+                segment += 1
+                temp_transcript = ""
+            print("before")
+            temp_transcript = temp_transcript + slice['text'] + " "
+            transcript_text[segment] = temp_transcript
+            print("aftre")
+        
+
+        counter = 0
+        for chunk in transcript_text:
+            counter += 1
+            print("this statement")
+            print("This is the transcript for segment: " + str(counter) + "\n" + str(chunk))
+
+        #print("This is the transcript returned: " + str(transcript))"""
         result = [video_slice for video_slice in transcript.fetch() if search_keyword.lower() in video_slice['text'].lower()]
         
         if (len(result) == 0):
